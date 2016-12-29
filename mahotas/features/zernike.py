@@ -20,7 +20,7 @@ def zernike(im, degree, radius, cm=None): # pragma: no cover
     warnings.warn('mahotas.zernike.zernike: This interface is deprecated. Switch the order of your arguments and use ``zernike_moments``', DeprecationWarning)
     return zernike_moments(im, radius, degree, cm)
 
-def zernike_moments(im, radius, degree=8, cm=None):
+def zernike_moments(im, radius, degree=8, cm=None, return_complex=False):
     """
     zvalues = zernike_moments(im, radius, degree=8, cm={center_of_mass(im)})
 
@@ -43,10 +43,13 @@ def zernike_moments(im, radius, degree=8, cm=None):
         Maximum degree to use (default: 8)
     cm : pair of floats, optional
         the centre of mass to use. By default, uses the image's centre of mass.
+    return_complex : Boolean
+        whether to return complex Zernike moments or not
+        (default: False)
 
     Returns
     -------
-    zvalues : 1-ndarray of floats
+    zvalues : 1-ndarray of floats or complex when ``return_complex=True``
         Zernike moments
 
     References
@@ -95,6 +98,9 @@ def zernike_moments(im, radius, degree=8, cm=None):
         for l in range(n+1):
             if (n-l)%2 == 0:
                 z = _zernike.znl(Dn, Ans[l], frac_center, n, l)
-                zvalues.append(abs(z))
-    return np.array(zvalues)
+                zvalues.append(z)
 
+    if return_complex:
+        return np.array(zvalues)
+    else:
+        return np.array(np.absolute(zvalues))
